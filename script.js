@@ -30,6 +30,30 @@ $(function () {
 
         // 入力チェックをした結果、エラーがあるかないかを判定
         let result = inputCheck();
+
+        //エラー判定とメッセージを取得
+        let error = result.error;
+        let message = result.message;
+
+        //　エラーが無かったらフォームを送信
+        if (error == false) {
+            //Ajaxでformを送信
+            $.ajax({
+                url: 'https://api.staticforms.xyz/submit',
+                type: 'POST',
+                dataType: 'json',
+                data: $('#form').serialize(),
+                success: function (result) {
+                    alert('お問い合わせを送信しました')
+                },
+                error: function (xhr, resp, text) {
+                    alert('お問い合わせを送信できませんでした')
+                }
+            })
+        } else {
+            //エラーメッセージを表示
+            alert(message);
+        }
      });
 
      // フォーカスが外れたとき(blur)にフォームの入力チェックをする
@@ -90,9 +114,10 @@ $(function () {
             //エラーあり
             $('#message').css('background-color', '#f79999');
             error = true;
-            massage += 'お問い合わせ内容を入力してください。\n';
+            message += 'お問い合わせ内容を入力してください。\n';
         } else {
             //エラーなし
+            console.log("エラーなし")
             $('#message').css('background-color', '#fafafa');
         }
 
@@ -130,6 +155,15 @@ $(function () {
         } else {
             $('#submit').attr('src', 'images/button-submit-blue.png');
         }
+
+        //オブジェクトでエラー判定とメッセージを返す
+        result = {
+            error: error,
+            message: message
+        }
+
+        //戻り値としてエラーがあるかどうかを返す
+        return result;
 
      }
 });
